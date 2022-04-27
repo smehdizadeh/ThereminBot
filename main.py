@@ -1,5 +1,6 @@
 from rtpmidi import RtpMidi
 from pymidi import server
+import arm_movement
 
 class MyHandler(server.Handler):
     def on_peer_connected(self, peer):
@@ -21,7 +22,12 @@ class MyHandler(server.Handler):
 
 
 if __name__ == "__main__":
-    ROBOT = "Your Robot"
+
+    # Connect to dynamixels
+    portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, DXL_MOVING_STATUS_THRESHOLD  = dynamixel_setup()
+
+    # Start listening for midi
+    ROBOT = "ThereminBot"
     PORT = 5004
-    rtp_midi = RtpMidi(ROBOT, MyHandler(), PORT)
-    rtp_midi.run()
+#    rtp_midi = RtpMidi(ROBOT, MyHandler(), PORT)
+#    rtp_midi.run()
