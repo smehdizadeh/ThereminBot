@@ -7,7 +7,7 @@ import sys, tty, termios
 
 def getch():
 	fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
+	old_settings = termios.tcgetattr(fd)
 	try:
 		tty.setraw(sys.stdin.fileno())
 		ch = sys.stdin.read(1)
@@ -19,21 +19,6 @@ def dynamixel_setup():
 ##############################################################################
 # DYNAMIXEL SETUP
 ##############################################################################
-#	if os.name == 'nt':
-#		import msvcrt
-#		def getch():
-#	    		return msvcrt.getch().decode()
-#	else:
-#		fd = sys.stdin.fileno()
-#		old_settings = termios.tcgetattr(fd)
-#		def getch():
-#	    		try:
-#	        		tty.setraw(sys.stdin.fileno())
-#	        		ch = sys.stdin.read(1)
-#	    		finally:
-#	        		termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-#	    		return ch
-
 
 	#********* DYNAMIXEL Model definition *********
 	#***** (Use only one definition at a time) *****
@@ -52,7 +37,7 @@ def dynamixel_setup():
 	DXL_MINIMUM_PITCH_VALUE     = 0         # Refer to the Minimum Position Limit of product eManual
 	DXL_MAXIMUM_PITCH_VALUE     = 2020      # Refer to the Maximum Position Limit of product eManual
 	DXL_MINIMUM_AMP_VALUE	    = 3700
-	DXL_MAXIMUM_AMP_VALUE	    = 4000
+	DXL_MAXIMUM_AMP_VALUE	    = 4095
 	ADDR_MIN_POS		    = 52
 	ADDR_MAX_POS		    = 48
 	BAUDRATE                    = 57600
@@ -62,6 +47,7 @@ def dynamixel_setup():
 
 	# DYNAMIXEL Protocol Version (1.0 / 2.0)
 	# https://emanual.robotis.com/docs/en/dxl/protocol2/
+
 	PROTOCOL_VERSION            = 2.0
 
 	# Factory default ID of all DYNAMIXEL is 1
@@ -77,7 +63,7 @@ def dynamixel_setup():
 	DXL_MOVING_STATUS_THRESHOLD = 20    # Dynamixel moving status threshold
 
 	# Initial stable PID tuning
-	PGAIN			    = 100
+	PGAIN			    = 1000
 	IGAIN			    = 1
 	DGAIN			    = 500
 
@@ -112,31 +98,31 @@ def dynamixel_setup():
 
 	# Set min/max position limits
 	dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_MIN_POS, DXL_MINIMUM_PITCH_VALUE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-        dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_MAX_POS, DXL_MAXIMUM_PITCH_VALUE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_MAX_POS, DXL_MAXIMUM_PITCH_VALUE)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-        dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_MIN_POS, DXL_MINIMUM_AMP_VALUE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_MIN_POS, DXL_MINIMUM_AMP_VALUE)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
 	dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_MAX_POS, DXL_MAXIMUM_AMP_VALUE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-        else:
-                print("Dynamixel position limits successfully set")
+	else:
+		print("Dynamixel position limits successfully set")
 
 
 	# Set PID gains
@@ -170,140 +156,122 @@ def dynamixel_setup():
 		print("Pitch Dynamixel has been successfully connected")
 
 	dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_ENABLE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
-        else:
-                print("Amplitude Dynamixel has been successfully connected")
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
+	else:
+		print("Amplitude Dynamixel has been successfully connected")
 
 
-	return portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, DXL_MOVING_STATUS_THRESHOLD;
+	return portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, DXL_MOVING_STATUS_THRESHOLD, ADDR_PGAIN, ADDR_IGAIN, ADDR_DGAIN
 
-######################################################################################
-# SET GOAL POSITIONS
-######################################################################################
-def set_positions():
-	index = 0
-	dxl_goal_position = [1300, 1600, 1800, 2020, 1400, 2023, 1023]
-	dxl_volumes = [3700, 3700, 4000, 3900, 3900, 3700, 3000]
-
-	print("Positions set.........", dxl_goal_position)
-	print("Volumes set..........", dxl_volumes)
-
-	return index, dxl_goal_position, dxl_volumes
 
 
 ######################################################################################
 # MOVE THROUGH POSITIONS
 ######################################################################################
-def move_to(index, dxl_goal_position, dxl_volumes, portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, DXL_MOVING_STATUS_THRESHOLD):
-	if len(dxl_goal_position) != len(dxl_volumes):
-		print("Error: Make sure note and volume arrays are the same length")
-		return
+def move_to(portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, DXL_MOVING_STATUS_THRESHOLD, key_value, vel_value):
 	try:
+
+
+		note_dict = 	{"E5": 1662,
+				"F5": 1823,
+				"Fs5": 1879,
+				"G5": 1928,
+				"Gs5": 1956,
+				"A5": 1971,
+				"As5": 1984,
+				"B5": 1996,
+				"C6": 2006,
+				"Cs6": 2015}
+
+		# Write goal pitch position
+		dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_GOAL_POSITION, note_dict[key_value])
+
+		if dxl_comm_result != COMM_SUCCESS:
+			print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+		elif dxl_error != 0:
+			print("%s" % packetHandler.getRxPacketError(dxl_error))
+
+		amp_pos = round(4095.0 - (3.11*vel_value))
+
+		# Write goal amplitude position
+		dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_GOAL_POSITION, amp_pos)
+
+		if dxl_comm_result != COMM_SUCCESS:
+			print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+		elif dxl_error != 0:
+			print("%s" % packetHandler.getRxPacketError(dxl_error))
+
 		while 1:
-			# Write goal pitch position
-			dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_GOAL_POSITION, dxl_goal_position[index])
-			
+			# Read present position
+			dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_PRESENT_POSITION)
+
 			if dxl_comm_result != COMM_SUCCESS:
 				print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
 			elif dxl_error != 0:
 				print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-			# Write goal pitch position
-                        dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_GOAL_POSITION, dxl_volumes[index])
+			#print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (DXL_PITCH_ID, note_dict[key_value], dxl_present_position))
 
-                        if dxl_comm_result != COMM_SUCCESS:
-                                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-                        elif dxl_error != 0:
-                                print("%s" % packetHandler.getRxPacketError(dxl_error))
+			if not abs(note_dict[key_value] - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD:
+				break
 
-			while 1:
-				# Read present position
-				dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read4ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_PRESENT_POSITION)
-				
-				if dxl_comm_result != COMM_SUCCESS:
-					print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-				elif dxl_error != 0:
-					print("%s" % packetHandler.getRxPacketError(dxl_error))
+			dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_PRESENT_POSITION)
 
-				print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (DXL_PITCH_ID, dxl_goal_position[index], dxl_present_position))
+			if dxl_comm_result != COMM_SUCCESS:
+				print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+			elif dxl_error != 0:
+				print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-				if not abs(dxl_goal_position[index] - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD:
-					break
+			#print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (DXL_AMP_ID, amp_pos, dxl_present_position))
 
-				dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read4ByteTxRx(portHandler, DXL_AMP_ID, ADDR_PRESENT_POSITION)
-
-                                if dxl_comm_result != COMM_SUCCESS:
-                                        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-                                elif dxl_error != 0:
-                                        print("%s" % packetHandler.getRxPacketError(dxl_error))
-
-                                print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (DXL_AMP_ID, dxl_volumes[index], dxl_present_position))
-
-                                if not abs(dxl_volumes[index] - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD:
-                                        break
-
-			time.sleep(2) #pause
-
-			# Change goal position
-			index = index + 1
-			if index == len(dxl_goal_position):
-				index = 0
+			if not abs(amp_pos - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD:
 				break
 
 
 	except KeyboardInterrupt:
 		pass
 
-def dynamixel_shutdown(portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE):
+###################################################################################################
+# DYNAMIXEL SHUTDOWN SEQUENCE
+####################################################################################################
+def dynamixel_shutdown(portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, DXL_MOVING_STATUS_THRESHOLD):
+	move_to(portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, DXL_MOVING_STATUS_THRESHOLD, "C6", 127)
+
+	time.sleep(1)
+
 	print("Shutting down")
-        dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-        dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
-        if dxl_comm_result != COMM_SUCCESS:
-                print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-        elif dxl_error != 0:
-                print("%s" % packetHandler.getRxPacketError(dxl_error))
+	dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-        portHandler.closePort()
+	portHandler.closePort()
 
-#######################################################################################
-# MAIN
-#######################################################################################
-#if __name__ == "__main__":
-	# connect to dynamixels
-#	portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, DXL_MOVING_STATUS_THRESHOLD  = dynamixel_setup()
 
-	# get goal positions
-#	index, dxl_goal_position, dxl_volumes = set_positions()
 
-	# wait to proceed
-#	while 1:
-#		print("Press SPACE to start")
-#		if getch() == chr(0x20):
-#			break
+def set_staccato(portHandler, packetHandler, DXL_PITCH_ID, ADDR_PGAIN):
+	print("staccato")
+	dxl_comm_result, dxl_error = packetHandler.write2ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_PGAIN, 1000)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-	# move through positions
-#	move_to(index, dxl_goal_position, dxl_volumes, portHandler, packetHandler, DXL_PITCH_ID, DXL_AMP_ID, ADDR_GOAL_POSITION, ADDR_PRESENT_POSITION, DXL_MOVING_STATUS_THRESHOLD)
+def set_legato(portHandler, packetHandler, DXL_PITCH_ID, ADDR_PGAIN):
+	print("legato")
+	dxl_comm_result, dxl_error = packetHandler.write2ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_PGAIN, 500)
+	if dxl_comm_result != COMM_SUCCESS:
+		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+	elif dxl_error != 0:
+		print("%s" % packetHandler.getRxPacketError(dxl_error))
 
-	# finish
-#	print("Shutting down")
-#	dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_PITCH_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
-#	if dxl_comm_result != COMM_SUCCESS:
-#		print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-#	elif dxl_error != 0:
-#		print("%s" % packetHandler.getRxPacketError(dxl_error))
-#
-#	dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, DXL_AMP_ID, ADDR_TORQUE_ENABLE, TORQUE_DISABLE)
-#       if dxl_comm_result != COMM_SUCCESS:
-#               print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-#       elif dxl_error != 0:
-#               print("%s" % packetHandler.getRxPacketError(dxl_error))
-#
-#	portHandler.closePort()
